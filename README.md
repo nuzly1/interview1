@@ -6,6 +6,9 @@
 Given more time, the following additions and improvements could be made to further enhance the application:
 
 ### Enhanced Test Coverage:
+- Add env specific properties and use spring profiles
+
+### Enhanced Test Coverage:
 - Add integration tests, using SpringBoot support for Testcontainers (Use @ServiceConnection, @GenericContainers)
 - Add more edge case scenarios in unit tests, mainly for rate limiting and API key validation.
 - Add Performence test

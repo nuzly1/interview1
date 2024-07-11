@@ -1,7 +1,9 @@
 package com.weatherapi.service;
 
+import com.weatherapi.exception.ErrorCode;
 import com.weatherapi.exception.InvalidApiKeyException;
 import com.weatherapi.exception.RateLimitExceededException;
+import com.weatherapi.exception.WeatherApiException;
 import com.weatherapi.model.WeatherReport;
 import com.weatherapi.repository.WeatherReportRepository;
 import com.weatherapi.util.ApiKeyManager;
@@ -43,15 +45,38 @@ public class WeatherService {
         String url = String.format("%s?q=%s,%s&appid=%s", apiUrl, city, country, userApiKey);
         Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-        if (response != null && response.containsKey("weather")) {
-            List<Map<String, Object>> weather = (List<Map<String, Object>>) response.get("weather");
-            String description = (String) weather.get(0).get("description");
-
-            WeatherReport report = new WeatherReport(null, city, country, description, Instant.now().getEpochSecond());
-            return repository.save(report);
+        if (response == null) {
+            throw new WeatherApiException(ErrorCode.EXTERNAL_API_ERROR, "No response from weather API");
         }
 
-        throw new RuntimeException("Failed to fetch weather data");
+        Object weatherObj = response.get("weather");
+        if (!(weatherObj instanceof List)) {
+            throw new WeatherApiException(ErrorCode.EXTERNAL_API_ERROR, "Invalid weather data format");
+        }
+
+        List<?> weatherList = (List<?>) weatherObj;
+        if (weatherList.isEmpty()) {
+            throw new WeatherApiException(ErrorCode.EXTERNAL_API_ERROR, "Weather data is empty");
+        }
+
+        Object firstWeatherObj = weatherList.get(0);
+        if (!(firstWeatherObj instanceof Map)) {
+            throw new WeatherApiException(ErrorCode.EXTERNAL_API_ERROR, "Invalid weather data format");
+        }
+
+        Map<?, ?> weatherMap = (Map<?, ?>) firstWeatherObj;
+        Object descriptionObj = weatherMap.get("description");
+        if (!(descriptionObj instanceof String)) {
+            throw new WeatherApiException(ErrorCode.EXTERNAL_API_ERROR, "Weather description is missing or invalid");
+        }
+
+        String description = (String) descriptionObj;
+        if (description.isEmpty()) {
+            throw new WeatherApiException(ErrorCode.EXTERNAL_API_ERROR, "Weather description is empty");
+        }
+
+        WeatherReport report = new WeatherReport(null, city, country, description, Instant.now().getEpochSecond());
+        return repository.save(report);
     }
 
     private boolean isReportFresh(WeatherReport report) {
