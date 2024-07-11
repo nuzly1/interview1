@@ -16,7 +16,7 @@ Given more time, the following additions and improvements could be made to furth
 - Use OpenAPI for docs
 
 ### Logging and Monitoring:
-- Implement comprehensive logging throughout the application for better debugging and monitoring.
+- Implement comprehensive logging throughout the application for better debugging and monitoring @slf4j.
 - Instrument with open telemetry to publish metrics, traces and logs.
 
 ### Security Enhancements:
