@@ -1,5 +1,6 @@
 package com.weatherapi.service;
 
+import com.weatherapi.exception.InvalidApiKeyException;
 import com.weatherapi.exception.RateLimitExceededException;
 import com.weatherapi.model.WeatherReport;
 import com.weatherapi.repository.WeatherReportRepository;
@@ -7,7 +8,6 @@ import com.weatherapi.util.ApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,6 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 class WeatherServiceTest {
 
@@ -35,7 +36,7 @@ class WeatherServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        openMocks(this);
         weatherService = new WeatherService(repository, restTemplate, apiKeyManager);
         ReflectionTestUtils.setField(weatherService, "apiUrl", "http://api.openweathermap.org/data/2.5/weather");
     }
@@ -76,7 +77,7 @@ class WeatherServiceTest {
         String apiKey = "invalid_key";
         when(apiKeyManager.isValidApiKey(apiKey)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(InvalidApiKeyException.class,
                 () -> weatherService.getWeatherReport("London", "UK", apiKey));
     }
 

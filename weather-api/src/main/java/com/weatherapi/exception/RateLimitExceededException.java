@@ -1,7 +1,7 @@
 package com.weatherapi.exception;
 
-public class RateLimitExceededException extends RuntimeException {
+public class RateLimitExceededException extends WeatherApiException {
     public RateLimitExceededException(String message) {
-        super(message);
+        super(ErrorCode.RATE_LIMIT_EXCEEDED, message);
     }
 }

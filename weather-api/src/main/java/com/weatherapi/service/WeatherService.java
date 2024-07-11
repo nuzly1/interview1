@@ -1,5 +1,6 @@
 package com.weatherapi.service;
 
+import com.weatherapi.exception.InvalidApiKeyException;
 import com.weatherapi.exception.RateLimitExceededException;
 import com.weatherapi.model.WeatherReport;
 import com.weatherapi.repository.WeatherReportRepository;
@@ -26,7 +27,7 @@ public class WeatherService {
 
     public WeatherReport getWeatherReport(String city, String country, String userApiKey) {
         if (!apiKeyManager.isValidApiKey(userApiKey)) {
-            throw new IllegalArgumentException("Invalid API key");
+            throw new InvalidApiKeyException("Invalid API key");
         }
 
         if (!apiKeyManager.allowRequest(userApiKey)) {

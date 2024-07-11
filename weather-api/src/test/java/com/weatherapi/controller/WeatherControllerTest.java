@@ -1,5 +1,6 @@
 package com.weatherapi.controller;
 
+import com.weatherapi.exception.ErrorCode;
 import com.weatherapi.exception.RateLimitExceededException;
 import com.weatherapi.model.WeatherReport;
 import com.weatherapi.service.WeatherService;
@@ -68,7 +69,7 @@ class WeatherControllerTest {
                         .header("X-API-Key", "valid_key")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isTooManyRequests())
-                .andExpect(jsonPath("$.title").value("Rate Limit Exceeded"));
+                .andExpect(jsonPath("$.title").value(ErrorCode.RATE_LIMIT_EXCEEDED.toString()));
     }
 
     @Test
@@ -82,6 +83,6 @@ class WeatherControllerTest {
                         .header("X-API-Key", "valid_key")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.title").value("Internal Server Error"));
+                .andExpect(jsonPath("$.title").value(ErrorCode.UNKNOWN_ERROR.toString()));
     }
 }

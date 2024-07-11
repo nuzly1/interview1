@@ -17,10 +17,10 @@ public class WeatherController {
     private final WeatherService weatherService;
 
     @GetMapping
-    public ResponseEntity<WeatherReport> getWeatherReport(
-            @RequestParam @NotBlank String city,
-            @RequestParam @NotBlank String country,
-            @RequestHeader("X-API-Key") @NotBlank String apiKey) {
+    public ResponseEntity<WeatherReport> getWeatherDescription(
+            @RequestParam @NotBlank(message = "City is required") String city,
+            @RequestParam @NotBlank(message = "Country is required") String country,
+            @RequestHeader("X-API-Key") @NotBlank(message = "API key is required") String apiKey) {
         WeatherReport report = weatherService.getWeatherReport(city, country, apiKey);
         return ResponseEntity.ok(report);
     }

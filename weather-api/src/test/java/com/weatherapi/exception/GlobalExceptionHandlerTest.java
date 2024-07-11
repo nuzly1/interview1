@@ -13,20 +13,20 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleRateLimitExceededException() {
         RateLimitExceededException ex = new RateLimitExceededException("Rate limit exceeded");
-        ProblemDetail problemDetail = handler.handleRateLimitExceededException(ex);
+        ProblemDetail problemDetail = handler.handleWeatherApiException(ex);
 
         assertEquals(HttpStatus.TOO_MANY_REQUESTS.value(), problemDetail.getStatus());
-        assertEquals("Rate Limit Exceeded", problemDetail.getTitle());
+        assertEquals(ErrorCode.RATE_LIMIT_EXCEEDED.toString(), problemDetail.getTitle());
         assertEquals("Rate limit exceeded", problemDetail.getDetail());
     }
 
     @Test
     void handleIllegalArgumentException() {
         IllegalArgumentException ex = new IllegalArgumentException("Invalid input");
-        ProblemDetail problemDetail = handler.handleIllegalArgumentException(ex);
+        ProblemDetail problemDetail = handler.handleValidationExceptions(ex);
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.getStatus());
-        assertEquals("Invalid Input", problemDetail.getTitle());
+        assertEquals(ErrorCode.INVALID_INPUT.toString(), problemDetail.getTitle());
         assertEquals("Invalid input", problemDetail.getDetail());
     }
 
@@ -36,7 +36,7 @@ class GlobalExceptionHandlerTest {
         ProblemDetail problemDetail = handler.handleGenericException(ex);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), problemDetail.getStatus());
-        assertEquals("Internal Server Error", problemDetail.getTitle());
+        assertEquals(ErrorCode.UNKNOWN_ERROR.toString(), problemDetail.getTitle());
         assertEquals("An unexpected error occurred", problemDetail.getDetail());
     }
 
